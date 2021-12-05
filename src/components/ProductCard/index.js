@@ -7,7 +7,9 @@ import { productSchema } from "../../schema";
 
 export default function ProductCard({ product, categories, contentSlots }) {
   const [selectedContentSlots, setSelectedContentSlots] = useState(
-    product.productImages.map((productImage) => productImage.contentSlot)
+    product.productImages.reduce((total, current) => {
+      return { ...total, [current.imageFileName]: current.contentSlot };
+    }, {})
   );
 
   const newProduct = { ...product };
@@ -37,26 +39,11 @@ export default function ProductCard({ product, categories, contentSlots }) {
     },
   });
 
-  const getContentSlotsForImage = (currentProductImage) => {
-    return contentSlots.filter(
-      (contentSlot) =>
-        contentSlot.id === currentProductImage.contentSlot ||
-        !selectedContentSlots.includes(contentSlot.id)
-    );
-  };
-
-  const handleChangeSlot = (currentProductImage) => {
-    product.productImages
-      .filter(
-        (productImage) =>
-          productImage.imageFileName === currentProductImage.imageFileName
-      )
-      .forEach(
-        (productImage) =>
-          (productImage.contentSlot = currentProductImage.contentSlot)
-      );
+  const handleChangeSlot = () => {
     setSelectedContentSlots(
-      product.productImages.map((productImage) => productImage.contentSlot)
+      formik.values.productImages.reduce((total, current) => {
+        return { ...total, [current.imageFileName]: current.contentSlot };
+      }, {})
     );
   };
 
@@ -96,10 +83,11 @@ export default function ProductCard({ product, categories, contentSlots }) {
                       xs={12}
                     >
                       <MediaCard
-                        productImage={productImage}
-                        contentSlots={getContentSlotsForImage(productImage)}
+                        formik={formik}
+                        productImageFileName={productImage.imageFileName}
+                        contentSlots={contentSlots}
+                        selectedContentSlots={selectedContentSlots}
                         handleChangeSlot={handleChangeSlot}
-                        product={product}
                       />
                     </Grid>
                   ))}

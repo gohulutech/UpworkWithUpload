@@ -11,29 +11,49 @@ import {
 } from "@material-ui/core";
 
 export default function MediaCard({
-  productImage,
+  formik,
+  productImageFileName,
   contentSlots,
+  selectedContentSlots,
   handleChangeSlot = () => {},
-  product,
 }) {
-  const [isImageSelected, setIsImageSelected] = useState(
-    Boolean(productImage.checked)
+  const productImage = formik.values?.productImages.find(
+    (productImage) => productImage.imageFileName === productImageFileName
   );
-
+  const [isImageSelected, setIsImageSelected] = useState(
+    Boolean(productImage?.checked)
+  );
   const [selectedSlot, setSelectedSlot] = useState(
     contentSlots.find((slot) => productImage.contentSlot === slot.id)
   );
+  const [availableSelectedSlots, setAvailableSelectedSlots] = useState(
+    contentSlots.filter(
+      (contentSlot) =>
+        contentSlot.id === productImage.contentSlot ||
+        !Object.values(selectedContentSlots).includes(contentSlot.id)
+    )
+  );
 
   useEffect(() => {
-    const slot = contentSlots.find(
-      (slot) => productImage.contentSlot === slot.id
+    setAvailableSelectedSlots(
+      contentSlots.filter(
+        (contentSlot) =>
+          contentSlot.id === productImage.contentSlot ||
+          !Object.values(selectedContentSlots).includes(contentSlot.id)
+      )
     );
-    setSelectedSlot(slot);
-  }, [productImage.contentSlot, contentSlots]);
+  }, [selectedContentSlots]);
 
   const onCheckedImage = (value) => {
     productImage.checked = value;
     setIsImageSelected(value);
+  };
+
+  const onSelectedSlot = (_, slot) => {
+    if (slot == null) onCheckedImage(false);
+    productImage.contentSlot = slot != null ? slot.id : "";
+    setSelectedSlot(slot);
+    handleChangeSlot();
   };
 
   const errorMessages =
@@ -68,7 +88,7 @@ export default function MediaCard({
         <Autocomplete
           fullWidth
           size="small"
-          options={contentSlots}
+          options={availableSelectedSlots}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -79,12 +99,7 @@ export default function MediaCard({
           )}
           value={selectedSlot}
           getOptionLabel={(option) => option.name || ""}
-          onChange={(_, slot) => {
-            if (slot == null) onCheckedImage(false);
-            productImage.contentSlot = slot != null ? slot.id : "";
-            setSelectedSlot(slot);
-            handleChangeSlot(productImage);
-          }}
+          onChange={onSelectedSlot}
         />
         <Checkbox
           color="primary"
