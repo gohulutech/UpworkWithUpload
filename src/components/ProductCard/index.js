@@ -5,24 +5,31 @@ import { useFormik, FormikProvider } from "formik";
 import ProductInputs from "../ProductInputs";
 import { productSchema } from "../../schema";
 
-export default function ProductCard(props) {
-  const { product, categories, contentSlots } = props;
+export default function ProductCard({ product, categories, contentSlots }) {
   const [selectedContentSlots, setSelectedContentSlots] = useState(
     product.productImages.map((productImage) => productImage.contentSlot)
   );
 
+  const newProduct = { ...product };
   const formik = useFormik({
     initialValues: {
-      productCode: product.productCode || "",
-      productName: product.productName || "",
-      productCategory: product.productCategory || null,
-      productExisting: product.productExisting,
-      productImages: product.productImages || [],
+      productCode: newProduct.productCode || "",
+      productName: newProduct.productName || "",
+      productCategory: newProduct.productCategory || null,
+      productExisting: newProduct.productExisting,
+      productImages:
+        newProduct.productImages.map((productImage) => {
+          return {
+            imageFileName: productImage.imageFileName,
+            imageUrl: productImage.imageUrl,
+            contentSlot: productImage.contentSlot,
+            checked: productImage.checked,
+          };
+        }) || [],
     },
     enableReinitialize: true,
     validationSchema: productSchema,
     onSubmit: (values) => {
-      console.log(values);
       const newProductImages = values.productImages.filter(
         (productImage) => productImage.checked
       );

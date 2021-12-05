@@ -8,7 +8,7 @@ import { images, contentSlots } from "./data";
 
 export default function App() {
   const dispatch = useDispatch();
-  const products = useSelector((state) => state.product?.products);
+  const products = useSelector((state) => [...state.product?.products]);
 
   useEffect(() => {
     dispatch(uploadProduct(images));
