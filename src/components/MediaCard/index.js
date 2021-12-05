@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Autocomplete } from "@material-ui/lab";
 import {
   Card,
@@ -7,14 +7,14 @@ import {
   Box,
   Typography,
   TextField,
-  Checkbox
+  Checkbox,
 } from "@material-ui/core";
 
 export default function MediaCard({
   productImage,
   contentSlots,
   handleChangeSlot = () => {},
-  product
+  product,
 }) {
   const [isImageSelected, setIsImageSelected] = useState(
     Boolean(productImage.checked)
@@ -23,6 +23,13 @@ export default function MediaCard({
   const [selectedSlot, setSelectedSlot] = useState(
     contentSlots.find((slot) => productImage.contentSlot === slot.id)
   );
+
+  useEffect(() => {
+    const slot = contentSlots.find(
+      (slot) => productImage.contentSlot === slot.id
+    );
+    setSelectedSlot(slot);
+  }, [productImage.contentSlot, contentSlots]);
 
   const onCheckedImage = (value) => {
     productImage.checked = value;
@@ -38,7 +45,7 @@ export default function MediaCard({
   return (
     <Card
       style={{
-        border: productImage.hasError ? "1px solid red" : "unset"
+        border: productImage.hasError ? "1px solid red" : "unset",
       }}
     >
       <CardContent>

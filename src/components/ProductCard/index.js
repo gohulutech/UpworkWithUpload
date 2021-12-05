@@ -17,7 +17,7 @@ export default function ProductCard(props) {
       productName: product.productName || "",
       productCategory: product.productCategory || null,
       productExisting: product.productExisting,
-      productImages: product.productImages || []
+      productImages: product.productImages || [],
     },
     enableReinitialize: true,
     validationSchema: productSchema,
@@ -27,7 +27,7 @@ export default function ProductCard(props) {
         (productImage) => productImage.checked
       );
       console.log({ ...values, productImages: newProductImages });
-    }
+    },
   });
 
   const getContentSlotsForImage = (currentProductImage) => {
@@ -73,11 +73,11 @@ export default function ProductCard(props) {
                 sx={{
                   display: "flex",
                   alignItems: "flex-start",
-                  flexDirection: "column"
+                  flexDirection: "column",
                 }}
               >
                 <Grid component="div" container spacing={2}>
-                  {formik.values.productImages.map((productImage, index) => (
+                  {formik.values.productImages.map((productImage) => (
                     <Grid
                       key={productImage.id}
                       component="div"
