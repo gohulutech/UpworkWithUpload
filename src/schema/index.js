@@ -10,9 +10,9 @@ export const productSchema = object({
         imageFileName: string().max(255).required("required"),
         imageUrl: string().max(255).required("required"),
         contentSlot: string().max(255).required("required"),
-        checked: bool().required("required")
+        checked: bool().required("required"),
       })
     )
     .compact((productImage) => !productImage.checked)
-    .min(1, "Please select an image")
+    .min(1, "Please select an image"),
 });
