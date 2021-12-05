@@ -10,6 +10,18 @@ import {
   Checkbox,
 } from "@material-ui/core";
 
+const getAvailableSlots = (
+  contentSlots,
+  selectedContentSlots,
+  selectedSlot
+) => {
+  return contentSlots.filter(
+    (contentSlot) =>
+      contentSlot.id === selectedSlot.id ||
+      !Object.values(selectedContentSlots).includes(contentSlot.id)
+  );
+};
+
 export default function MediaCard({
   formik,
   productImageFileName,
@@ -27,22 +39,14 @@ export default function MediaCard({
     contentSlots.find((slot) => productImage.contentSlot === slot.id)
   );
   const [availableSelectedSlots, setAvailableSelectedSlots] = useState(
-    contentSlots.filter(
-      (contentSlot) =>
-        contentSlot.id === productImage.contentSlot ||
-        !Object.values(selectedContentSlots).includes(contentSlot.id)
-    )
+    getAvailableSlots(contentSlots, selectedContentSlots, selectedSlot)
   );
 
   useEffect(() => {
     setAvailableSelectedSlots(
-      contentSlots.filter(
-        (contentSlot) =>
-          contentSlot.id === productImage.contentSlot ||
-          !Object.values(selectedContentSlots).includes(contentSlot.id)
-      )
+      getAvailableSlots(contentSlots, selectedContentSlots, selectedSlot)
     );
-  }, [contentSlots, selectedContentSlots, productImage.contentSlot]);
+  }, [contentSlots, selectedContentSlots, selectedSlot]);
 
   const onCheckedImage = (value) => {
     productImage.checked = value;
