@@ -1,7 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import { Grid, Paper, Button } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
+import { useSelector } from "react-redux";
 
 const UploadImage = ({ handleUploadImages = () => {} }) => {
+  const products = useSelector((state) => state.product?.products);
+  const [hasError, setHasError] = useState(false);
+
   const onUploadImage = (files) => {
     const fileList = Array.from(files);
     const images = fileList.map((image) => {
@@ -15,9 +20,18 @@ const UploadImage = ({ handleUploadImages = () => {} }) => {
         imageFile: image,
         imageFileName: image?.name,
         imageUrl: null,
-        checked: false
+        checked: false,
       };
     });
+
+    const productCodes = images.map((image) => image.productCode);
+    const productExist = products.filter((product) =>
+      productCodes.includes(product.productCode)
+    )?.length;
+    if (productExist) {
+      setHasError(true);
+      return;
+    }
     handleUploadImages(images);
   };
 
@@ -39,6 +53,12 @@ const UploadImage = ({ handleUploadImages = () => {} }) => {
     <Grid container>
       <Grid item xs={12} md={12}>
         <Paper>
+          {hasError && (
+            <Alert severity="error">
+              Some of the images have already been added to a product.
+            </Alert>
+          )}
+
           <div
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => handleDrop(e)}
@@ -47,7 +67,7 @@ const UploadImage = ({ handleUploadImages = () => {} }) => {
               style={{
                 fontSize: "18px",
                 fontWeight: "normal",
-                marginBottom: "1rem"
+                marginBottom: "1rem",
               }}
             >
               Drag & Drop Images here
@@ -56,7 +76,7 @@ const UploadImage = ({ handleUploadImages = () => {} }) => {
               style={{
                 fontSize: "18px",
                 fontWeight: "normal",
-                marginBottom: "1rem"
+                marginBottom: "1rem",
               }}
             >
               or
