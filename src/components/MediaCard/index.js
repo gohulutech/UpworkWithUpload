@@ -42,7 +42,7 @@ export default function MediaCard({
           !Object.values(selectedContentSlots).includes(contentSlot.id)
       )
     );
-  }, [selectedContentSlots]);
+  }, [contentSlots, selectedContentSlots, productImage.contentSlot]);
 
   const onCheckedImage = (value) => {
     productImage.checked = value;
