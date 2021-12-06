@@ -32,7 +32,6 @@ export default function ProductCard({ product, categories, contentSlots }) {
     enableReinitialize: true,
     validationSchema: productSchema,
     onSubmit: (values) => {
-      console.log(values);
       const newProductImages = values.productImages.filter(
         (productImage) => productImage.checked
       );
