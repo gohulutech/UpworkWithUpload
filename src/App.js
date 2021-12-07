@@ -3,7 +3,12 @@ import "./styles.css";
 import ProductCard from "./components/ProductCard";
 import Upload from "./components/Upload";
 import { useDispatch, useSelector } from "react-redux";
-import { uploadProduct, getContentSlots, changeContentSlot } from "./actions";
+import {
+  uploadProduct,
+  getContentSlots,
+  changeContentSlot,
+  selectImage,
+} from "./actions";
 import { images, contentSlots } from "./data";
 
 export default function App() {
@@ -29,6 +34,12 @@ export default function App() {
     dispatch(changeContentSlot(imageFileName, slotSelectedID, productCode));
   };
 
+  const handleSelectImage = (productImage, selected, product) => {
+    const imageFileName = productImage?.imageFileName ?? null;
+    const productCode = product?.productCode ?? null;
+    dispatch(selectImage(imageFileName, selected, productCode));
+  };
+
   return (
     <div className="App">
       <div>
@@ -42,6 +53,7 @@ export default function App() {
               contentSlots={contentSlots}
               key={index}
               handleChangeSlot={handleChangeSlot}
+              handleSelectImage={handleSelectImage}
             />
           </div>
         ))}

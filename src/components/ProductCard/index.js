@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import MediaCard from "../MediaCard";
 import { Box, Grid, Button, FormLabel } from "@material-ui/core";
 import { useFormik, FormikProvider } from "formik";
 import ProductInputs from "../ProductInputs";
 import { productSchema } from "../../schema";
 
-export default function ProductCard({ product, categories, contentSlots }) {
-  const [selectedContentSlots, setSelectedContentSlots] = useState(
-    product.productImages.reduce((total, current) => {
-      return { ...total, [current.imageFileName]: current.contentSlot };
-    }, {})
-  );
-
+export default function ProductCard({
+  product,
+  categories,
+  contentSlots,
+  handleChangeSlot,
+  handleSelectImage,
+}) {
   const newProduct = { ...product };
   const formik = useFormik({
     initialValues: {
@@ -32,7 +32,6 @@ export default function ProductCard({ product, categories, contentSlots }) {
     enableReinitialize: true,
     validationSchema: productSchema,
     onSubmit: (values) => {
-      console.log(values);
       const newProductImages = values.productImages.filter(
         (productImage) => productImage.checked
       );
@@ -40,14 +39,15 @@ export default function ProductCard({ product, categories, contentSlots }) {
     },
   });
 
-  const handleChangeSlot = () => {
-    setSelectedContentSlots(
-      formik.values.productImages.reduce((total, current) => {
-        return { ...total, [current.imageFileName]: current.contentSlot };
-      }, {})
+  const getAvailableSlots = (productImage) => {
+    const otherContentSlots = product.productImages
+      .filter((image) => image.imageFileName !== productImage.imageFileName)
+      .map((image) => image.contentSlot);
+
+    return contentSlots.filter(
+      (contentSlot) => !otherContentSlots.includes(contentSlot.id)
     );
   };
-
   return (
     <FormikProvider value={formik}>
       <form onSubmit={formik.handleSubmit}>
@@ -86,9 +86,10 @@ export default function ProductCard({ product, categories, contentSlots }) {
                       <MediaCard
                         formik={formik}
                         productImageFileName={productImage.imageFileName}
-                        contentSlots={contentSlots}
-                        selectedContentSlots={selectedContentSlots}
+                        contentSlots={getAvailableSlots(productImage)}
                         handleChangeSlot={handleChangeSlot}
+                        handleSelectImage={handleSelectImage}
+                        product={product}
                       />
                     </Grid>
                   ))}

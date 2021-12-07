@@ -3,7 +3,7 @@ import { appConstants } from "../constants";
 export const getContentSlots = (payload) => {
   return {
     type: appConstants.GET_CONTENT_SLOTS_SUCCESS,
-    payload
+    payload,
   };
 };
 
@@ -14,13 +14,13 @@ export const uploadProduct = (payload) => {
       contentSlot: image?.slot,
       imageUrl: image?.imageUrl,
       imageFileName: image?.imageFileName,
-      checked: image?.checked
+      checked: image?.checked,
     };
   });
 
   return {
     type: appConstants.UPLOAD_PRODUCT_SUCCESS,
-    payload: images
+    payload: images,
   };
 };
 
@@ -34,7 +34,18 @@ export const changeContentSlot = (
     payload: {
       imageFileName,
       slotSelectedID,
-      productCode
-    }
+      productCode,
+    },
+  };
+};
+
+export const selectImage = (imageFileName, selected, productCode) => {
+  return {
+    type: appConstants.SELECT_IMAGE,
+    payload: {
+      imageFileName,
+      selected,
+      productCode,
+    },
   };
 };
