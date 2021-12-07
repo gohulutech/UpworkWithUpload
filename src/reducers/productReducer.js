@@ -3,7 +3,7 @@ import { appConstants } from "../constants";
 export const initialState = {
   products: [],
   errors: [],
-  contentSlots: []
+  contentSlots: [],
 };
 
 const appReducer = (state = initialState, action) => {
@@ -11,7 +11,7 @@ const appReducer = (state = initialState, action) => {
     case appConstants.GET_CONTENT_SLOTS_SUCCESS:
       return {
         ...state,
-        contentSlots: action.payload
+        contentSlots: action.payload,
       };
     case appConstants.UPLOAD_PRODUCT_SUCCESS:
       return action.payload.reduce(
@@ -25,7 +25,7 @@ const appReducer = (state = initialState, action) => {
             imageFileName,
             imageUrl,
             contentSlot,
-            checked
+            checked,
           }
         ) => {
           const shouldUpdate = state.products.some(
@@ -44,11 +44,11 @@ const appReducer = (state = initialState, action) => {
                         imageFile,
                         imageFileName,
                         imageUrl,
-                        checked
-                      })
+                        checked,
+                      }),
                     }
                   : product
-              )
+              ),
             };
           }
 
@@ -65,10 +65,10 @@ const appReducer = (state = initialState, action) => {
                   imageFileName,
                   imageUrl,
                   contentSlot,
-                  checked
-                }
-              ]
-            })
+                  checked,
+                },
+              ],
+            }),
           };
         },
         state
@@ -83,8 +83,8 @@ const appReducer = (state = initialState, action) => {
             return action.payload.images.some(
               (image) => data.id === image.imageFileName
             );
-          })
-        ]
+          }),
+        ],
       };
 
     case appConstants.CHANGE_CONTENT_SLOT:
@@ -103,20 +103,48 @@ const appReducer = (state = initialState, action) => {
                   productImage?.imageFileName === action.payload?.imageFileName
                     ? {
                         ...productImage,
-                        contentSlot: action.payload?.slotSelectedID
+                        contentSlot: action.payload?.slotSelectedID,
                       }
                     : productImage
-                )
-              ]
+                ),
+              ],
             };
           }
 
           return {
-            ...product
+            ...product,
           };
-        })
+        }),
       };
 
+    case appConstants.SELECT_IMAGE:
+      const { imageFileName, selected, productCode } = action.payload;
+
+      return {
+        ...state,
+        products: state.products.map((product) => {
+          const isMatches = state.products.some(
+            (product) => product?.productCode === productCode
+          );
+
+          if (!isMatches) return { ...product };
+
+          return {
+            ...product,
+            productImages: [
+              ...product?.productImages?.map((productImage) => {
+                if (productImage?.imageFileName !== imageFileName)
+                  return productImage;
+
+                return {
+                  ...productImage,
+                  checked: selected,
+                };
+              }),
+            ],
+          };
+        }),
+      };
     default:
       return state;
   }
