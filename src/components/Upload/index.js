@@ -1,13 +1,26 @@
-import React, { useState } from "react";
-import { Grid, Paper, Button } from "@material-ui/core";
-import Alert from "@material-ui/lab/Alert";
+import React, { useState, useEffect } from "react";
+import { Grid, Paper, Button, Modal, Box, Typography } from "@material-ui/core";
 import { useSelector } from "react-redux";
+
+const modalStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 400,
+  bgcolor: "background.paper",
+  border: "2px solid #000",
+  boxShadow: 24,
+  p: 4,
+};
 
 const UploadImage = ({ handleUploadImages = () => {} }) => {
   const products = useSelector((state) => state.product?.products);
   const [hasError, setHasError] = useState(false);
+  const [modalMessage, setModalMessage] = useState(null);
 
   const onUploadImage = (files) => {
+    setHasError(false);
     const fileList = Array.from(files);
     const images = fileList.map((image) => {
       return {
@@ -24,15 +37,25 @@ const UploadImage = ({ handleUploadImages = () => {} }) => {
       };
     });
 
+    if (images == null || images.length === 0) return;
+
     const productCodes = images.map((image) => image.productCode);
-    const productExist = products.filter((product) =>
-      productCodes.includes(product.productCode)
-    )?.length;
-    if (productExist) {
-      setHasError(true);
-      return;
-    }
-    handleUploadImages(images);
+    const existingProductCodes = products
+      .filter((product) => productCodes.includes(product.productCode))
+      .map((product) => product.productCode);
+
+    const imagesToAdd = images.filter(
+      (image) =>
+        existingProductCodes != null &&
+        !existingProductCodes.includes(image.productCode)
+    );
+
+    handleUploadImages(imagesToAdd);
+    setModalMessage(
+      `${imagesToAdd.length} images added, ${
+        images.length - imagesToAdd.length
+      } images had already been added.`
+    );
   };
 
   const handleDrop = (e) => {
@@ -49,16 +72,30 @@ const UploadImage = ({ handleUploadImages = () => {} }) => {
     e.target.value = null;
   };
 
+  const handleClose = () => {
+    setHasError(false);
+    setModalMessage(null);
+  };
+
+  useEffect(() => {
+    if (modalMessage == null) return;
+
+    setHasError(true);
+  }, [modalMessage]);
   return (
     <Grid container>
       <Grid item xs={12} md={12}>
         <Paper>
-          {hasError && (
-            <Alert severity="error">
-              Some of the images have already been added to a product.
-            </Alert>
-          )}
-
+          <Modal open={hasError} onClose={handleClose}>
+            <Box sx={modalStyle}>
+              <Typography id="modal-modal-title" variant="h6" component="h2">
+                Message
+              </Typography>
+              <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                {modalMessage}
+              </Typography>
+            </Box>
+          </Modal>
           <div
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => handleDrop(e)}
