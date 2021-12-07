@@ -41,7 +41,7 @@ export const changeContentSlot = (
 
 export const selectImage = (imageFileName, selected, productCode) => {
   return {
-    type: appConstants.selectImage,
+    type: appConstants.SELECT_IMAGE,
     payload: {
       imageFileName,
       selected,
