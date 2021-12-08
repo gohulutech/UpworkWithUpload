@@ -49,14 +49,17 @@ export default function MediaCard({
   }, [contentSlots, selectedContentSlots, selectedSlot]);
 
   const onCheckedImage = (value) => {
-    formik.setFieldValue("productImages[0].checked", value);
+    const imageIndex = formik.values?.productImages.indexOf(productImage);
+    formik.setFieldValue(`productImages[${imageIndex}].checked`, value);
     setIsImageSelected(value);
   };
 
   const onSelectedSlot = (_, slot) => {
+    const imageIndex = formik.values?.productImages.indexOf(productImage);
     if (slot == null) onCheckedImage(false);
+
     formik.setFieldValue(
-      "productImages[0].contentSlot",
+      `productImages[${imageIndex}].contentSlot`,
       slot != null ? slot.id : ""
     );
 
