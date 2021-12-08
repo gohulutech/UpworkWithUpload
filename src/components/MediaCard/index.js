@@ -17,7 +17,7 @@ const getAvailableSlots = (
 ) => {
   return contentSlots.filter(
     (contentSlot) =>
-      contentSlot.id === selectedSlot.id ||
+      (selectedSlot != null && contentSlot.id === selectedSlot.id) ||
       !Object.values(selectedContentSlots).includes(contentSlot.id)
   );
 };
